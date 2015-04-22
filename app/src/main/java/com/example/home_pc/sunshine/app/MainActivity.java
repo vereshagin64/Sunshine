@@ -1,19 +1,10 @@
 package com.example.home_pc.sunshine.app;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -24,7 +15,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
     }
@@ -43,9 +34,9 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -55,36 +46,5 @@ public class MainActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-        ArrayAdapter <String> ForecastAdapter;
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            String[] data = { //Фэйковые значения для списка
-               "Сегодня - Солнечно - 26/20",
-               "Завтра - Пасмурно - 22/18",
-               "Среда - Облачно - 24/20",
-               "Четверг - Солнечно - 26/20",
-               "Пятница - Солнечно - 32/26",
-               "Суббота - Сильная облачность - 26/23",
-               "Воскресенье - Тяжелый дождь - 18/16"
-            };
-            List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
-
-                     ForecastAdapter  = new ArrayAdapter<String>(
-                             getActivity(),
-                    R.layout.list_item_forecast,
-                    R.id.list_item_forecast_textview,
-                    weekForecast);
-            ListView listView = (ListView)rootView.findViewById(
-                    R.id.listview_forecast);
-            listView.setAdapter(ForecastAdapter);
-            return rootView;
-        }
-    }
 }
