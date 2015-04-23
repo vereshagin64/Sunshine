@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -29,8 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ForecastFragment extends Fragment {
     ArrayAdapter<String> ForecastAdapter;
@@ -57,8 +56,8 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new  FetchWeatherTask();
-            weatherTask.execute("94043");
+            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity())
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -68,7 +67,7 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
+/*
         String[] data = { //Фэйковые значения для списка
                 "Сегодня - Солнечно - 26/20",
                 "Завтра - Пасмурно - 22/18",
@@ -79,16 +78,18 @@ public class ForecastFragment extends Fragment {
                 "Воскресенье - Тяжелый дождь - 18/16"
         };
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
-
+*/
         ForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                weekForecast);
-        ListView listView = (ListView) rootView.findViewById(
-                R.id.listview_forecast);
-        listView.setAdapter(ForecastAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                new ArrayList<String>());
+
+                ListView listView = (ListView) rootView.findViewById( R.id.listview_forecast);
+                listView.setAdapter(ForecastAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String forecast = ForecastAdapter.getItem(position);
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
@@ -99,6 +100,19 @@ public class ForecastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void updateWeather(){
+        FetchWeatherTask weatherTask = new  FetchWeatherTask();
+        String location = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_location_key),
+                        getString(R.string.pref_location_default));
+        weatherTask.execute(location);
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
